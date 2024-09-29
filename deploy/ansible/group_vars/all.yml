@@ -1,0 +1,4 @@
+# CREATED BY TERRAFORM DO NOT MODIFY THE OUTPUT
+
+apache_listening_port: 8082
+database_listening_port: 3306

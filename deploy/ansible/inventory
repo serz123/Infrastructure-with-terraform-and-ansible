@@ -1,0 +1,11 @@
+# CREATED BY TERRAFORM DO NOT MODIFY THE OUTPUT
+[webservers]
+194.47.178.204
+
+[databases]
+194.47.178.104
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+# USe of IdentifyFile from https://fabianlee.org/2021/05/29/ansible-orchestrating-ssh-access-through-a-bastion-host/

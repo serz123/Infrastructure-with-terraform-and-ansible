@@ -1,0 +1,59 @@
+---
+
+- name: A ping to all
+  hosts: webservers
+  tasks:
+    - name: Ping
+      ping:
+        data: "webserver received the ping"
+      register: data_struct
+
+    - name: Print return of ping
+      debug:
+        msg: "{{ data_struct.ping }}"
+
+- name: Install Apache2 on Ubuntu
+  hosts: webservers
+  become: yes #To do the tasks as root - https://docs.ansible.com/ansible/latest/user_guide/become.html
+  tasks:
+    - name: Install latest version of Apache2
+      apt: 
+        name: apache2 
+        update_cache: yes 
+        state: latest
+
+- name: Copy files
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Copy the index.html to a default value
+      copy: 
+        remote_src: True 
+        src: /var/www/html/index.html 
+        dest: /var/www/html/index.html.default 
+        force: false
+    - name: Copy and extract the website files
+      ansible.builtin.unarchive:
+        src:  cloud-native-applications.tar.gz #ansible automatically searches in the "files" folder
+        dest: /var/www/html/
+
+
+
+#Following instructions https://www.geeksforgeeks.org/how-to-change-apache-http-port-in-linux/
+- name: Change listening port
+  hosts: webservers
+  become: yes
+  tasks: 
+
+#Instructions for sending a template here: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+    - name: Send updated ports.conf from template
+      template:
+        src: ./files/ports.conf.j2
+        dest: /etc/apache2/ports.conf
+      #insructions for the notify here: https://docs.ansible.com/ansible/latest/user_guide/playbooks_handlers.html
+      notify: restart-apache
+  handlers:
+    - name: restart-apache
+      service:
+        name: apache2
+        state: restarted

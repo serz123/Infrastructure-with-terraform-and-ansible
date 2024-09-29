@@ -1,0 +1,5 @@
+[mysqld]
+# Bind to all network interfaces
+bind-address = 0.0.0.0
+
+port = {{ database_listening_port | default(3306) }}

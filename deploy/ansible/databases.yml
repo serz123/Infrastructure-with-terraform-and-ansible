@@ -1,0 +1,35 @@
+---
+
+- name: A ping to all
+  hosts: databases
+  tasks:
+    - name: Ping
+      ping:
+        data: "database received the ping"
+      register: data_struct
+
+    - name: Print return of ping
+      debug:
+        msg: "{{ data_struct.ping }}"
+
+- name: Install mysql database on Ubuntu
+  hosts: databases
+  become: yes #To do the tasks as root - https://docs.ansible.com/ansible/latest/user_guide/become.html
+  tasks:
+    - name: Install latest version of mysql-server
+      apt: 
+        name: mysql-server
+        update_cache: yes 
+        state: latest
+
+    - name: Update MySQL bind address to 0.0.0.0
+      template:
+        src: ./files/mysqld.conf.j2
+        dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+      notify: restart-mysql
+
+  handlers:
+    - name: restart-mysql
+      service:
+        name: mysql
+        state: restarted
